@@ -1,14 +1,27 @@
 import { useState, useContext } from "react";
 import AuthContext from "../context/AuthContext";
+import api from "../services/api";
+import DatabaseSelectionModal from "../components/DatabaseSelectionModal";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    login({ email, password });
+    try {
+      await login({ email, password });
+      setModalOpen(true);
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
+  const handleSelection = async (choice) => {
+    console.log("User selected:", choice);
+    // You can handle database/collection selection logic here
   };
 
   return (
@@ -33,6 +46,12 @@ const Login = () => {
         />
         <button type="submit" className="w-full bg-blue-500 p-2 rounded text-white">Login</button>
       </form>
+      
+      <DatabaseSelectionModal 
+        isOpen={isModalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onSelect={handleSelection} 
+      />
     </div>
   );
 };
